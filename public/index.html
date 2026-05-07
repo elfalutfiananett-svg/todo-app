@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>To-Do List Produktivitas</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #df9ac1;
+      padding: 30px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #1f2937;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #6b7280;
+      margin-bottom: 25px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      padding: 20px;
+      border-radius: 15px;
+      color: white;
+    }
+
+    .blue {
+      background: #2563eb;
+    }
+
+    .green {
+      background: #16a34a;
+    }
+
+    .red {
+      background: #dc2626;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+
+    input {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      color: white;
+    }
+
+    .btn-add {
+      background: #2563eb;
+    }
+
+    .btn-done {
+      background: #16a34a;
+    }
+
+    .btn-delete {
+      background: #dc2626;
+    }
+
+    .task {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f9fafb;
+      padding: 15px;
+      border-radius: 15px;
+      margin-bottom: 15px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .status {
+      margin-top: 5px;
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+    }
+
+    .belum {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .selesai {
+      background: #dcfce7;
+      color: #89cdce;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>To-Do List Produktivitas</h1>
+    
+
+    <div class="stats">
+      <div class="card blue">
+        <h2>Total Tugas</h2>
+        <h1 id="total">0</h1>
+      </div>
+
+      <div class="card green">
+        <h2>Selesai</h2>
+        <h1 id="done">0</h1>
+      </div>
+
+      <div class="card red">
+        <h2>Belum</h2>
+        <h1 id="pending">0</h1>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <input type="text" id="taskInput" placeholder="Masukkan tugas baru...">
+      <button class="btn-add" onclick="addTask()">Tambah</button>
+    </div>
+
+    <div id="taskList"></div>
+  </div>
+
+  <script>
+    let tasks = [];
+
+    function renderTasks() {
+      const taskList = document.getElementById('taskList');
+      taskList.innerHTML = '';
+
+      let done = 0;
+
+      tasks.forEach((task, index) => {
+        if(task.status === 'Selesai') done++;
+
+        taskList.innerHTML += `
+          <div class="task">
+            <div>
+              <h3>${task.nama}</h3>
+              <span class="status ${task.status === 'Selesai' ? 'selesai' : 'belum'}">
+                ${task.status}
+              </span>
+            </div>
+
+            <div class="actions">
+              <button class="btn-done" onclick="completeTask(${index})">
+                Selesai
+              </button>
+
+              <button class="btn-delete" onclick="deleteTask(${index})">
+                Hapus
+              </button>
+            </div>
+          </div>
+        `;
+      });
+
+      document.getElementById('total').innerText = tasks.length;
+      document.getElementById('done').innerText = done;
+      document.getElementById('pending').innerText = tasks.length - done;
+    }
+
+    function addTask() {
+      const input = document.getElementById('taskInput');
+
+      if(input.value.trim() === '') {
+        alert('Masukkan tugas terlebih dahulu');
+        return;
+      }
+
+      tasks.push({
+        nama: input.value,
+        status: 'Belum Selesai'
+      });
+
+      input.value = '';
+      renderTasks();
+    }
+
+    function completeTask(index) {
+      tasks[index].status = 'Selesai';
+      renderTasks();
+    }
+
+    function deleteTask(index) {
+      tasks.splice(index, 1);
+      renderTasks();
+    }
+  </script>
+
+</body>
+</html>
