@@ -1,39 +1,47 @@
 const express = require('express');
-const mysql = require('mysql2');
+const Minio = require('minio');
 
 const app = express();
 
 app.use(express.json());
 app.use(express.static('public'));
 
-
-const db = mysql.createConnection({
-    host: process.env.MYSQLHOST,
-    user: process.env.MYSQLUSER,
-    password: process.env.MYSQLPASSWORD,
-    database: process.env.MYSQLDATABASE,
-    port: process.env.MYSQLPORT
+const minioClient = new Minio.Client({
+    endPoint: '127.0.0.1',
+    port: 9000,
+    useSSL: false,
+    accessKey: 'minioadmin',
+    secretKey: 'minioadmin'
 });
 
-db.connect((err) => {
-    if(err){
-        console.log('Database gagal connect');
-        console.log(err);
-    } else {
-        console.log('Database berhasil connect');
-    }
-});
+const bucket = 'todoapp';
+
+let tasks = [];
 
 app.get('/tasks', (req, res) => {
-    db.query('SELECT * FROM tasks', (err, results) => {
-        if(err){
-            res.json(err);
-        } else {
-            res.json(results);
-        }
-    });
+    res.json(tasks);
 });
 
-app.listen(process.env.PORT || 3000, () => {
-    console.log('Server berjalan');
+app.post('/tasks', async (req, res) => {
+    const task = {
+        id: Date.now(),
+        text: req.body.text,
+        done: false
+    };
+
+    tasks.push(task);
+
+    const data = JSON.stringify(tasks);
+
+    await minioClient.putObject(
+        bucket,
+        'tasks.json',
+        data
+    );
+
+    res.json(task);
+});
+
+app.listen(3000, () => {
+    console.log('Server berjalan di port 3000');
 });
