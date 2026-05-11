@@ -55,6 +55,20 @@
       margin-top:5px;
     }
 
+    .logout-btn{
+      background:linear-gradient(135deg,#dc2626,#f43f5e);
+      padding:12px 22px;
+      border-radius:14px;
+      color:white;
+      text-decoration:none;
+      font-weight:600;
+      transition:0.3s;
+    }
+
+    .logout-btn:hover{
+      transform:scale(1.05);
+    }
+
     .stats{
       display:grid;
       grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
@@ -219,10 +233,16 @@
   <div class="container">
 
     <div class="header">
+
       <div>
         <h1>✨ To-Do List Produktivitas</h1>
         <p>Kelola tugas harianmu dengan lebih modern</p>
       </div>
+
+      <a href="/logout" class="logout-btn">
+        Logout
+      </a>
+
     </div>
 
     <div class="stats">
@@ -300,14 +320,17 @@ function renderTasks() {
     if(task.done) done++;
 
     taskList.innerHTML += `
+
       <div class="task">
 
         <div>
+
           <h3>${task.text}</h3>
 
           <span class="status ${task.done ? 'selesai' : 'belum'}">
             ${task.done ? 'Selesai' : 'Belum'}
           </span>
+
         </div>
 
         <div class="actions">
@@ -329,6 +352,7 @@ function renderTasks() {
         </div>
 
       </div>
+
     `;
   });
 
@@ -345,9 +369,6 @@ async function addTask() {
   const input = document.getElementById('taskInput');
 
   if(input.value.trim() === '') {
-
-    alert('Masukkan tugas terlebih dahulu');
-
     return;
   }
 
@@ -381,11 +402,15 @@ async function completeTask(index){
   loadTasks();
 }
 
-function deleteTask(index){
+async function deleteTask(index){
 
-  tasks.splice(index,1);
+  const task = tasks[index];
 
-  renderTasks();
+  await fetch(`/tasks/${task.id}`, {
+    method:'DELETE'
+  });
+
+  loadTasks();
 }
 
 loadTasks();
