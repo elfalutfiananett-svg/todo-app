@@ -35,8 +35,26 @@ async function loadTasksFromMinio() {
 
         dataStream.on('end', () => {
 
-            if (data) {
-                tasks = JSON.parse(data);
+            try {
+
+                if (data) {
+
+                    tasks = JSON.parse(data);
+
+                    console.log('Tasks berhasil dimuat');
+
+                } else {
+
+                    tasks = [];
+
+                }
+
+            } catch (err) {
+
+                console.log('Error membaca tasks.json');
+
+                tasks = [];
+
             }
 
         });
@@ -45,86 +63,120 @@ async function loadTasksFromMinio() {
 
         console.log('Belum ada tasks.json');
 
+        tasks = [];
+
+        await saveTasksToMinio();
+
     }
+}
+
+async function saveTasksToMinio() {
+
+    const data = JSON.stringify(tasks);
+
+    await minioClient.putObject(
+        bucket,
+        'tasks.json',
+        data
+    );
 }
 
 loadTasksFromMinio();
 
 app.get('/tasks', (req, res) => {
+
     res.json(tasks);
+
 });
 
 app.post('/tasks', async (req, res) => {
 
-    const task = {
-        id: Date.now(),
-        text: req.body.text,
-        done: false
-    };
+    try {
 
-    tasks.push(task);
+        const task = {
+            id: Date.now(),
+            text: req.body.text,
+            done: false
+        };
 
-    const data = JSON.stringify(tasks);
+        tasks.push(task);
 
-    await minioClient.putObject(
-        bucket,
-        'tasks.json',
-        data
-    );
+        await saveTasksToMinio();
 
-    res.json(task);
+        res.json(task);
+
+    } catch (err) {
+
+        res.status(500).json({
+            message: 'Gagal menambah task'
+        });
+
+    }
+
 });
 
 app.put('/tasks/:id', async (req, res) => {
 
-    const id = Number(req.params.id);
+    try {
 
-    tasks = tasks.map(task => {
+        const id = Number(req.params.id);
 
-        if (task.id === id) {
-            task.done = true;
-        }
+        tasks = tasks.map(task => {
 
-        return task;
-    });
+            if (task.id === id) {
 
-    const data = JSON.stringify(tasks);
+                task.done = true;
 
-    await minioClient.putObject(
-        bucket,
-        'tasks.json',
-        data
-    );
+            }
 
-    res.json({
-        message: 'Task selesai'
-    });
+            return task;
+
+        });
+
+        await saveTasksToMinio();
+
+        res.json({
+            message: 'Task selesai'
+        });
+
+    } catch (err) {
+
+        res.status(500).json({
+            message: 'Gagal update task'
+        });
+
+    }
 
 });
 
 app.delete('/tasks/:id', async (req, res) => {
 
-    const id = Number(req.params.id);
+    try {
 
-    tasks = tasks.filter(task => task.id !== id);
+        const id = Number(req.params.id);
 
-    const data = JSON.stringify(tasks);
+        tasks = tasks.filter(task => task.id !== id);
 
-    await minioClient.putObject(
-        bucket,
-        'tasks.json',
-        data
-    );
+        await saveTasksToMinio();
 
-    res.json({
-        message: 'Task dihapus'
-    });
+        res.json({
+            message: 'Task dihapus'
+        });
+
+    } catch (err) {
+
+        res.status(500).json({
+            message: 'Gagal hapus task'
+        });
+
+    }
 
 });
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
+
     console.log(`Server berjalan di port ${PORT}`);
 
 });
