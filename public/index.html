@@ -5,113 +5,210 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>To-Do List Produktivitas</title>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
 
     *{
       margin:0;
       padding:0;
       box-sizing:border-box;
-      font-family:Arial, sans-serif;
+      font-family:'Poppins', sans-serif;
     }
 
     body{
-      background:#df9ac1;
+      min-height:100vh;
+      background:linear-gradient(135deg,#f9a8d4,#c084fc,#60a5fa);
+      display:flex;
+      justify-content:center;
+      align-items:center;
       padding:30px;
     }
 
     .container{
-      max-width:900px;
-      margin:auto;
-      background:white;
-      padding:30px;
-      border-radius:20px;
-      box-shadow:0 4px 10px rgba(0,0,0,0.1);
+      width:100%;
+      max-width:950px;
+      background:rgba(255,255,255,0.15);
+      backdrop-filter:blur(12px);
+      border:1px solid rgba(255,255,255,0.3);
+      border-radius:30px;
+      padding:35px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.15);
+      color:white;
     }
 
-    h1{
-      color:#1f2937;
-      margin-bottom:20px;
+    .header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:30px;
+    }
+
+    .header h1{
+      font-size:38px;
+      font-weight:700;
+    }
+
+    .header p{
+      opacity:0.8;
+      margin-top:5px;
     }
 
     .stats{
       display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-      gap:15px;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:20px;
       margin-bottom:30px;
     }
 
     .card{
-      padding:20px;
-      border-radius:15px;
+      padding:25px;
+      border-radius:25px;
       color:white;
+      position:relative;
+      overflow:hidden;
+      transition:0.3s;
+    }
+
+    .card:hover{
+      transform:translateY(-5px);
+    }
+
+    .card::before{
+      content:'';
+      position:absolute;
+      width:120px;
+      height:120px;
+      background:rgba(255,255,255,0.15);
+      border-radius:50%;
+      top:-40px;
+      right:-40px;
     }
 
     .blue{
-      background:#2563eb;
+      background:linear-gradient(135deg,#2563eb,#60a5fa);
     }
 
     .green{
-      background:#16a34a;
+      background:linear-gradient(135deg,#16a34a,#4ade80);
     }
 
     .red{
-      background:#dc2626;
+      background:linear-gradient(135deg,#dc2626,#fb7185);
+    }
+
+    .card h2{
+      font-size:18px;
+      font-weight:500;
+      margin-bottom:10px;
+    }
+
+    .card h1{
+      font-size:40px;
     }
 
     .input-group{
       display:flex;
-      gap:10px;
-      margin-bottom:25px;
+      gap:15px;
+      margin-bottom:30px;
     }
 
     input{
       flex:1;
-      padding:12px;
-      border:1px solid #d1d5db;
-      border-radius:10px;
-      font-size:16px;
-    }
-
-    button{
-      padding:12px 20px;
+      padding:16px;
       border:none;
-      border-radius:10px;
-      cursor:pointer;
-      font-weight:bold;
-      color:white;
+      border-radius:18px;
+      outline:none;
+      font-size:16px;
+      background:rgba(255,255,255,0.9);
     }
 
     .btn-add{
-      background:#2563eb;
+      padding:16px 25px;
+      border:none;
+      border-radius:18px;
+      background:linear-gradient(135deg,#2563eb,#7c3aed);
+      color:white;
+      font-weight:600;
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    .btn-add:hover{
+      transform:scale(1.05);
     }
 
     .task{
+      background:rgba(255,255,255,0.18);
+      border:1px solid rgba(255,255,255,0.2);
+      padding:20px;
+      border-radius:22px;
+      margin-bottom:18px;
       display:flex;
       justify-content:space-between;
       align-items:center;
-      background:#f9fafb;
-      padding:15px;
-      border-radius:15px;
-      margin-bottom:15px;
-      border:1px solid #e5e7eb;
+      transition:0.3s;
+    }
+
+    .task:hover{
+      transform:translateY(-3px);
+      background:rgba(255,255,255,0.25);
+    }
+
+    .task h3{
+      font-size:20px;
+      margin-bottom:8px;
     }
 
     .status{
-      margin-top:5px;
       display:inline-block;
-      padding:5px 10px;
-      border-radius:20px;
+      padding:6px 14px;
+      border-radius:30px;
       font-size:13px;
+      font-weight:600;
     }
 
     .belum{
       background:#fee2e2;
-      color:#b91c1c;
+      color:#dc2626;
     }
 
     .selesai{
       background:#dcfce7;
-      color:#166534;
+      color:#15803d;
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+    }
+
+    .btn-done{
+      background:linear-gradient(135deg,#16a34a,#22c55e);
+      border:none;
+      color:white;
+      padding:10px 18px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:600;
+    }
+
+    .btn-delete{
+      background:linear-gradient(135deg,#dc2626,#f43f5e);
+      border:none;
+      color:white;
+      padding:10px 18px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:600;
+    }
+
+    .empty{
+      text-align:center;
+      padding:40px;
+      opacity:0.8;
+      font-size:18px;
     }
 
   </style>
@@ -121,7 +218,12 @@
 
   <div class="container">
 
-    <h1>To-Do List Produktivitas</h1>
+    <div class="header">
+      <div>
+        <h1>✨ To-Do List Produktivitas</h1>
+        <p>Kelola tugas harianmu dengan lebih modern</p>
+      </div>
+    </div>
 
     <div class="stats">
 
@@ -143,6 +245,7 @@
     </div>
 
     <div class="input-group">
+
       <input
         type="text"
         id="taskInput"
@@ -155,104 +258,139 @@
       >
         Tambah
       </button>
+
     </div>
 
     <div id="taskList"></div>
 
   </div>
 
-  <script>
+<script>
 
-    let tasks = [];
+let tasks = [];
 
-    async function loadTasks(){
+async function loadTasks() {
 
-      const res = await fetch('/tasks');
+  const res = await fetch('/tasks');
 
-      tasks = await res.json();
+  tasks = await res.json();
 
-      renderTasks();
-    }
+  renderTasks();
+}
 
-    function renderTasks(){
+function renderTasks() {
 
-      const taskList = document.getElementById('taskList');
+  const taskList = document.getElementById('taskList');
 
-      taskList.innerHTML = '';
+  taskList.innerHTML = '';
 
-      let done = 0;
+  let done = 0;
 
-      tasks.forEach((task)=>{
+  if(tasks.length === 0){
 
-        if(task.done){
-          done++;
-        }
+    taskList.innerHTML = `
+      <div class="empty">
+        📌 Belum ada tugas
+      </div>
+    `;
+  }
 
-        taskList.innerHTML += `
-        
-          <div class="task">
+  tasks.forEach((task, index) => {
 
-            <div>
+    if(task.done) done++;
 
-              <h3>${task.text}</h3>
+    taskList.innerHTML += `
+      <div class="task">
 
-              <span class="status ${task.done ? 'selesai' : 'belum'}">
+        <div>
+          <h3>${task.text}</h3>
 
-                ${task.done ? 'Selesai' : 'Belum'}
+          <span class="status ${task.done ? 'selesai' : 'belum'}">
+            ${task.done ? 'Selesai' : 'Belum'}
+          </span>
+        </div>
 
-              </span>
+        <div class="actions">
 
-            </div>
+          <button
+            class="btn-done"
+            onclick="completeTask(${index})"
+          >
+            ✔ Selesai
+          </button>
 
-          </div>
+          <button
+            class="btn-delete"
+            onclick="deleteTask(${index})"
+          >
+            ✖ Hapus
+          </button>
 
-        `;
-      });
+        </div>
 
-      document.getElementById('total').innerText = tasks.length;
+      </div>
+    `;
+  });
 
-      document.getElementById('done').innerText = done;
+  document.getElementById('total').innerText = tasks.length;
 
-      document.getElementById('pending').innerText =
-      tasks.length - done;
-    }
+  document.getElementById('done').innerText = done;
 
-    async function addTask(){
+  document.getElementById('pending').innerText =
+    tasks.length - done;
+}
 
-      const input =
-      document.getElementById('taskInput');
+async function addTask() {
 
-      if(input.value.trim() === ''){
+  const input = document.getElementById('taskInput');
 
-        alert('Masukkan tugas');
+  if(input.value.trim() === '') {
 
-        return;
-      }
+    alert('Masukkan tugas terlebih dahulu');
 
-      await fetch('/tasks',{
+    return;
+  }
 
-        method:'POST',
+  await fetch('/tasks', {
 
-        headers:{
-          'Content-Type':'application/json'
-        },
+    method:'POST',
 
-        body:JSON.stringify({
+    headers:{
+      'Content-Type':'application/json'
+    },
 
-          text:input.value
+    body:JSON.stringify({
+      text:input.value
+    })
 
-        })
+  });
 
-      });
+  input.value='';
 
-      input.value = '';
+  loadTasks();
+}
 
-      loadTasks();
-    }
+async function completeTask(index){
 
-    loadTasks();
+  const task = tasks[index];
 
-  </script>
+  await fetch(`/tasks/${task.id}`, {
+    method: 'PUT'
+  });
+
+  loadTasks();
+}
+
+function deleteTask(index){
+
+  tasks.splice(index,1);
+
+  renderTasks();
+}
+
+loadTasks();
+
+</script>
 
 </body>
 </html>
